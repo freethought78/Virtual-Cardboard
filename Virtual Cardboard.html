@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+        <title>FT CHECKERS WOOOOO!</title>
+
+        <!-- Babylon.js -->
+        <script src="https://code.jquery.com/pep/0.4.2/pep.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.2/dat.gui.min.js"></script>
+        <script src="https://preview.babylonjs.com/ammo.js"></script>
+        <script src="https://preview.babylonjs.com/cannon.js"></script>
+        <script src="https://preview.babylonjs.com/Oimo.js"></script>
+        <script src="https://preview.babylonjs.com/gltf_validator.js"></script>
+        <script src="https://preview.babylonjs.com/earcut.min.js"></script>
+        <script src="https://preview.babylonjs.com/babylon.js"></script>
+        <script src="https://preview.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
+        <script src="https://preview.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+        <script src="https://preview.babylonjs.com/proceduralTexturesLibrary/babylonjs.proceduralTextures.min.js"></script>
+        <script src="https://preview.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js"></script>
+        <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.js"></script>
+        <script src="https://preview.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>
+        <script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
+
+        <style>
+            html, body {
+                overflow: hidden;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            #renderCanvas {
+                width: 100%;
+                height: 100%;
+                touch-action: none;
+            }
+        </style>
+    </head>
+<body>
+    <canvas id="renderCanvas"></canvas>
+    <script>
+        var canvas = document.getElementById("renderCanvas");
+
+        // You have to create a function called createScene. This function must return a BABYLON.Scene object
+        // You can reference the following variables: scene, canvas
+        // You must at least define a camera
+        
+        function createScene(){
+        
+            // Create the scene space
+            var scene = new BABYLON.Scene(engine);
+            scene.enablePhysics();
+            
+            // Add a camera to the scene 
+            var camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 0, 8), scene);
+            camera.setTarget(new BABYLON.Vector3.Zero());
+            // reduce camera movement speed
+            camera.speed = 0.2;
+            camera.inputs.attached.gamepad.gamepadAngularSensibility = 250;
+            // add wasd controls to camera
+            camera.keysUp.push(87);    //W
+            camera.keysDown.push(83)   //D
+            camera.keysLeft.push(65);  //A
+            camera.keysRight.push(68); //S
+            // attach camera to the canvas
+            camera.attachControl(canvas, true);
+        
+            // Add lights to the scene
+            var light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene);
+            var light2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(0, 40, -200), scene);
+            
+            // Add and manipulate meshes in the scene
+            var board = BABYLON.MeshBuilder.CreateBox("board", {height:0.1, width:5, depth:5}, scene);
+            board.position.y = -2;
+            board.physicsImpostor = new BABYLON.PhysicsImpostor(board, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, scene);
+        
+            
+            // Load Texture for board
+            var boardImage = new BABYLON.StandardMaterial("boardImage", scene);
+            boardImage.diffuseTexture = new BABYLON.Texture("https://images-na.ssl-images-amazon.com/images/I/61bBzK2dRFL._SL1013_.jpg", scene);
+            board.material = boardImage;
+            
+            // Create colors for pieces
+            var redpiececolor = new BABYLON.StandardMaterial("redpiececolor", scene);
+            var blackpiececolor = new BABYLON.StandardMaterial("blackpiececolor", scene);
+            redpiececolor.diffuseColor = new BABYLON.Color3(1,0,0);
+            blackpiececolor.diffuseColor = new BABYLON.Color3(0,0,0);
+            
+            
+            var pieces = [];
+            // Create red pieces
+            for (var x=0; x<4; x++){
+                pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("peice"+x, {height:0.1, diameter:0.5}, scene);
+                pieces[x].position.y = -1.9;
+                pieces[x].position.x = (x*1.1) - 1.93;
+                pieces[x].position.z = 1.9;
+                pieces[x].material = redpiececolor;
+            }
+            for (var y=0; y<4; y++){
+                var x = y+4;
+                pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("peice"+x, {height:0.1, diameter:0.5}, scene);
+                pieces[x].position.y = -1.9;
+                pieces[x].position.x = (y*1.1) - 1.93;
+                pieces[x].position.z = 0.8;
+                pieces[x].material = redpiececolor;
+            }
+            for (var y=0; y<4; y++){
+                var x = y+8;
+                pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("peice"+x, {height:0.1, diameter:0.5}, scene);
+                pieces[x].position.y = -1.9;
+                pieces[x].position.x = (y*1.1) - 1.4;
+                pieces[x].position.z = 1.4;
+                pieces[x].material = redpiececolor;
+            }
+            
+            //Create black pieces
+            for (var y=0; y<4; y++){
+                var x=y+12;
+                pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("peice"+x, {height:0.1, diameter:0.5}, scene);
+                pieces[x].position.y = -1.9;
+                pieces[x].position.x = (y*1.1) - 1.4;
+                pieces[x].position.z = -1.9;
+                pieces[x].material = blackpiececolor;
+            }
+            for (var y=0; y<4; y++){
+                var x = y+16;
+                pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("peice"+x, {height:0.1, diameter:0.5}, scene);
+                pieces[x].position.y = -1.9;
+                pieces[x].position.x = (y*1.1) - 1.93;
+                pieces[x].position.z = -1.4;
+                pieces[x].material = blackpiececolor;
+            }
+            for (var y=0; y<4; y++){
+                var x = y+20;
+                pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("peice"+x, {height:0.1, diameter:0.5}, scene);
+                pieces[x].position.y = -1.9;
+                pieces[x].position.x = (y*1.1) - 1.4;
+                pieces[x].position.z = -0.8;
+                pieces[x].material = blackpiececolor;
+            }
+            
+            // Make all pieces draggable
+            for (x in pieces){
+                pieces[x].physicsImpostor = new BABYLON.PhysicsImpostor(pieces[x], BABYLON.PhysicsImpostor.CylinderImpostor, { mass: 1, restitution: 0.2 }, scene);
+                pieces[x].actionManager = new BABYLON.ActionManager(scene);
+                makeDraggable(pieces[x]);
+            }
+            
+            return scene;
+        };
+        /******* End of the create scene function ******/    
+        
+    function makeDraggable(mesh){
+        // alow pieces to be dragged along the x,z plane
+        var dragBehavior = new BABYLON.PointerDragBehavior({dragPlaneNormal: new BABYLON.Vector3(0,1,0)});
+        mesh.addBehavior(dragBehavior);
+		//dragBehavior.updateDragPlane = false;
+		dragBehavior.useObjectOrienationForDragging = false;
+        dragBehavior.onDragStartObservable.add(()=>{
+			mesh.physicsImpostor.sleep();
+            mesh.position.y+= 0.3;
+        })
+        dragBehavior.onDragObservable.add(()=>{
+            mesh.physicsImpostor.setLinearVelocity(new BABYLON.Vector3(0,0,0))
+        })
+        
+        dragBehavior.onDragEndObservable.add(()=>{
+            if(mesh.physicsImpostor){
+                mesh.physicsImpostor.wakeUp()
+            }
+        })
+    };
+        
+        var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+        var scene = createScene();
+
+        engine.runRenderLoop(function () {
+            if (scene) {
+                scene.render();
+            }
+        });
+
+        // Resize
+        window.addEventListener("resize", function () {
+            engine.resize();
+        });
+    </script>
+</body>
+</html>
