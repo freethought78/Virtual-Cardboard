@@ -43,10 +43,12 @@
     <script>
         var canvas = document.getElementById("renderCanvas");
 
-        // You have to create a function called createScene. This function must return a BABYLON.Scene object
-        // You can reference the following variables: scene, canvas
-        // You must at least define a camera
-        
+		//Custom Key Detection
+		var keys = {};
+		window.onkeyup = function(e) { keys[e.keyCode] = false; }
+		window.onkeydown = function(e) { keys[e.keyCode] = true; }
+
+        // The Game Scene
         function createScene(){
         
             // Create the scene space
@@ -64,12 +66,32 @@
             camera.keysDown.push(83)   //D
             camera.keysLeft.push(65);  //A
             camera.keysRight.push(68); //S
+			
+			scene.onBeforeRenderObservable.add(
+				function(){
+					//Spacebar goes up
+					if (keys[32] == true){
+						camera.position.y += 0.003*engine.getDeltaTime();
+					}
+					//Left Control goes down
+					if (keys[17] == true){
+						camera.position.y -= 0.003*engine.getDeltaTime();
+					}
+				}
+			);
+			
             // attach camera to the canvas
             camera.attachControl(canvas, true);
         
             // Add lights to the scene
-            var light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(1, 1, 0), scene);
-            var light2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(0, 40, -200), scene);
+            var light1 = new BABYLON.DirectionalLight("light1", new BABYLON.Vector3(0, -1, 0), scene);
+			
+            var light2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(50, 40, 0), scene);
+			var light3 = new BABYLON.PointLight("light3", new BABYLON.Vector3(-50, 40, 0), scene);
+			
+			light1.intensity = 1;
+			light2.intensity = 0.5;
+			light3.intensity = 0.5;
             
             // Add and manipulate meshes in the scene
             var board = BABYLON.MeshBuilder.CreateBox("board", {height:0.1, width:5, depth:5}, scene);
@@ -85,8 +107,8 @@
             // Create colors for pieces
             var redpiececolor = new BABYLON.StandardMaterial("redpiececolor", scene);
             var blackpiececolor = new BABYLON.StandardMaterial("blackpiececolor", scene);
-            redpiececolor.diffuseColor = new BABYLON.Color3(1,0,0);
-            blackpiececolor.diffuseColor = new BABYLON.Color3(0,0,0);
+            redpiececolor.diffuseColor = new BABYLON.Color3(1,0.2,0.2);
+            blackpiececolor.diffuseColor = new BABYLON.Color3(0.2,0.2,0.2);
             
             
             var pieces = [];
@@ -147,6 +169,18 @@
                 pieces[x].actionManager = new BABYLON.ActionManager(scene);
                 makeDraggable(pieces[x]);
             }
+			
+			// Allow Pieces to cast shadows onto board
+			var shadowGenerator = new BABYLON.ShadowGenerator(1024, light1);
+			for (x in pieces){
+				shadowGenerator.getShadowMap().renderList.push(pieces[x]);
+			}
+			for (x in pieces){
+				pieces[x].receiveShadows = true;
+			}
+			board.receiveShadows = true;
+			shadowGenerator.useExponentialShadowMap = true;
+			//shadowGenerator.usePoissonSampling = true;
             
             return scene;
         };
