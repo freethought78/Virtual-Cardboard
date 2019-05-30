@@ -1,10 +1,8 @@
-#1 add physics engine
-#2 add scene editor (for making game packs and save games)
-#3 add networking
-thats all the major features
-i guess #4 add lobby
-and perhaps #5 create online repository for game packs
-connected to a forum
-its really not that bad
-okthe last step and most important
-#6 create capability to accept donations
+X add physics engine -done
+* add networking
+* add scene editor (for making game packs and save games)
+
+----
+
+* create CMS for lobby hosting and saving/distributing game packs
+X accept donations - done
