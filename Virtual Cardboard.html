@@ -54,12 +54,13 @@
             // Create the scene space
             var scene = new BABYLON.Scene(engine);
             scene.enablePhysics();
-            
+            scene.getPhysicsEngine().setGravity(new BABYLON.Vector3(0,-70, 0));
+			
             // Add a camera to the scene 
-            var camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 0, 8), scene);
+            var camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0, 50, 80), scene);
             camera.setTarget(new BABYLON.Vector3.Zero());
             // reduce camera movement speed
-            camera.speed = 0.2;
+            camera.speed = 2;
             camera.inputs.attached.gamepad.gamepadAngularSensibility = 250;
             // add wasd controls to camera
             camera.keysUp.push(87);    //W
@@ -71,11 +72,11 @@
 				function(){
 					//Spacebar goes up
 					if (keys[32] == true){
-						camera.position.y += 0.002*engine.getDeltaTime();
+						camera.position.y += 0.02*engine.getDeltaTime();
 					}
 					//Left Control goes down
 					if (keys[17] == true){
-						camera.position.y -= 0.002*engine.getDeltaTime();
+						camera.position.y -= 0.02*engine.getDeltaTime();
 					}
 				}
 			);
@@ -85,7 +86,7 @@
         
             // Add lights to the scene
             var light1 = new BABYLON.DirectionalLight("light1", new BABYLON.Vector3(0, -1, 0), scene);
-			light1.position = new BABYLON.Vector3(0,100,0);
+			light1.position = new BABYLON.Vector3(0,20,0);
 			var light2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(50, 40, 0), scene);
 			var light3 = new BABYLON.PointLight("light3", new BABYLON.Vector3(-50, 40, 0), scene);
 			
@@ -94,8 +95,8 @@
 			light3.intensity = 0.5;
             
             // Add and manipulate meshes in the scene
-            var board = BABYLON.MeshBuilder.CreateBox("board", {height:0.1, width:5, depth:5}, scene);
-            board.position.y = -2;
+            var board = BABYLON.MeshBuilder.CreateBox("board", {height:1, width:50, depth:50}, scene);
+            board.position.y = 1;
             board.physicsImpostor = new BABYLON.PhysicsImpostor(board, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, scene);
         
             
@@ -108,65 +109,65 @@
             // Create colors for pieces
             var redpiececolor = new BABYLON.StandardMaterial("redpiececolor", scene);
             var blackpiececolor = new BABYLON.StandardMaterial("blackpiececolor", scene);
-            redpiececolor.diffuseColor = new BABYLON.Color3(1,0.2,0.2);
-            blackpiececolor.diffuseColor = new BABYLON.Color3(0.2,0.2,0.2);
+            redpiececolor.diffuseColor = new BABYLON.Color3(1,0,0);
+            blackpiececolor.diffuseColor = new BABYLON.Color3(0.1,0.1,0.1);
             
             
             var pieces = [];
             // Create red pieces
             for (var x=0; x<4; x++){
-                pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("peice"+x, {height:0.1, diameter:0.5}, scene);
-                pieces[x].position.y = -1.9;
-                pieces[x].position.x = (x*1.1) - 1.93;
-                pieces[x].position.z = 1.9;
+                pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("peice"+x, {height:1, diameter:5}, scene);
+                pieces[x].position.y = 2;
+                pieces[x].position.x = (x*11) - 19.3;
+                pieces[x].position.z = 19;
                 pieces[x].material = redpiececolor;
             }
             for (var y=0; y<4; y++){
                 var x = y+4;
-                pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("peice"+x, {height:0.1, diameter:0.5}, scene);
-                pieces[x].position.y = -1.9;
-                pieces[x].position.x = (y*1.1) - 1.93;
-                pieces[x].position.z = 0.8;
+                pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("peice"+x, {height:1, diameter:5}, scene);
+                pieces[x].position.y = 2;
+                pieces[x].position.x = (y*11) - 19.3;
+                pieces[x].position.z = 8;
                 pieces[x].material = redpiececolor;
             }
             for (var y=0; y<4; y++){
                 var x = y+8;
-                pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("peice"+x, {height:0.1, diameter:0.5}, scene);
-                pieces[x].position.y = -1.9;
-                pieces[x].position.x = (y*1.1) - 1.4;
-                pieces[x].position.z = 1.4;
+                pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("peice"+x, {height:1, diameter:5}, scene);
+                pieces[x].position.y = 2;
+                pieces[x].position.x = (y*11) - 14;
+                pieces[x].position.z = 14;
                 pieces[x].material = redpiececolor;
             }
             
             //Create black pieces
             for (var y=0; y<4; y++){
                 var x=y+12;
-                pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("peice"+x, {height:0.1, diameter:0.5}, scene);
-                pieces[x].position.y = -1.9;
-                pieces[x].position.x = (y*1.1) - 1.4;
-                pieces[x].position.z = -1.9;
+                pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("peice"+x, {height:1, diameter:5}, scene);
+                pieces[x].position.y = 2;
+                pieces[x].position.x = (y*11) - 14;
+                pieces[x].position.z = -19;
                 pieces[x].material = blackpiececolor;
             }
             for (var y=0; y<4; y++){
                 var x = y+16;
-                pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("peice"+x, {height:0.1, diameter:0.5}, scene);
-                pieces[x].position.y = -1.9;
-                pieces[x].position.x = (y*1.1) - 1.93;
-                pieces[x].position.z = -1.4;
+                pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("peice"+x, {height:1, diameter:5}, scene);
+                pieces[x].position.y = 2;
+                pieces[x].position.x = (y*11) - 19.3;
+                pieces[x].position.z = -14;
                 pieces[x].material = blackpiececolor;
             }
             for (var y=0; y<4; y++){
                 var x = y+20;
-                pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("peice"+x, {height:0.1, diameter:0.5}, scene);
-                pieces[x].position.y = -1.9;
-                pieces[x].position.x = (y*1.1) - 1.4;
-                pieces[x].position.z = -0.8;
+                pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("peice"+x, {height:1, diameter:5}, scene);
+                pieces[x].position.y = 2;
+                pieces[x].position.x = (y*11) - 14;
+                pieces[x].position.z = -8;
                 pieces[x].material = blackpiececolor;
             }
             
             // Make all pieces draggable
             for (x in pieces){
-                pieces[x].physicsImpostor = new BABYLON.PhysicsImpostor(pieces[x], BABYLON.PhysicsImpostor.CylinderImpostor, { mass: 1, restitution: 0.2 }, scene);
+                pieces[x].physicsImpostor = new BABYLON.PhysicsImpostor(pieces[x], BABYLON.PhysicsImpostor.CylinderImpostor, { mass: 10, restitution: 0.2 }, scene);
                 pieces[x].actionManager = new BABYLON.ActionManager(scene);
                 makeDraggable(pieces[x]);
             }
@@ -193,7 +194,7 @@
 		dragBehavior.useObjectOrienationForDragging = false;
         dragBehavior.onDragStartObservable.add(()=>{
 			mesh.physicsImpostor.sleep();
-            mesh.position.y+= 0.7;
+            mesh.position.y+= 4;
         })
         dragBehavior.onDragObservable.add(()=>{
             mesh.physicsImpostor.setLinearVelocity(new BABYLON.Vector3(0,0,0))
