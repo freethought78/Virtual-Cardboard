@@ -71,11 +71,11 @@
 				function(){
 					//Spacebar goes up
 					if (keys[32] == true){
-						camera.position.y += 0.003*engine.getDeltaTime();
+						camera.position.y += 0.002*engine.getDeltaTime();
 					}
 					//Left Control goes down
 					if (keys[17] == true){
-						camera.position.y -= 0.003*engine.getDeltaTime();
+						camera.position.y -= 0.002*engine.getDeltaTime();
 					}
 				}
 			);
@@ -85,8 +85,8 @@
         
             // Add lights to the scene
             var light1 = new BABYLON.DirectionalLight("light1", new BABYLON.Vector3(0, -1, 0), scene);
-			
-            var light2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(50, 40, 0), scene);
+			light1.position = new BABYLON.Vector3(0,100,0);
+			var light2 = new BABYLON.PointLight("light2", new BABYLON.Vector3(50, 40, 0), scene);
 			var light3 = new BABYLON.PointLight("light3", new BABYLON.Vector3(-50, 40, 0), scene);
 			
 			light1.intensity = 1;
@@ -102,8 +102,9 @@
             // Load Texture for board
             var boardImage = new BABYLON.StandardMaterial("boardImage", scene);
             boardImage.diffuseTexture = new BABYLON.Texture("https://images-na.ssl-images-amazon.com/images/I/61bBzK2dRFL._SL1013_.jpg", scene);
-            board.material = boardImage;
-            
+            boardImage.activeLight = light1;
+			board.material = boardImage;
+			            
             // Create colors for pieces
             var redpiececolor = new BABYLON.StandardMaterial("redpiececolor", scene);
             var blackpiececolor = new BABYLON.StandardMaterial("blackpiececolor", scene);
@@ -172,15 +173,14 @@
 			
 			// Allow Pieces to cast shadows onto board
 			var shadowGenerator = new BABYLON.ShadowGenerator(1024, light1);
-			for (x in pieces){
-				shadowGenerator.getShadowMap().renderList.push(pieces[x]);
-			}
+			
 			for (x in pieces){
 				pieces[x].receiveShadows = true;
+				shadowGenerator.getShadowMap().renderList.push(pieces[x]);	
 			}
+	
 			board.receiveShadows = true;
-			shadowGenerator.useExponentialShadowMap = true;
-			//shadowGenerator.usePoissonSampling = true;
+
             
             return scene;
         };
@@ -190,11 +190,10 @@
         // alow pieces to be dragged along the x,z plane
         var dragBehavior = new BABYLON.PointerDragBehavior({dragPlaneNormal: new BABYLON.Vector3(0,1,0)});
         mesh.addBehavior(dragBehavior);
-		//dragBehavior.updateDragPlane = false;
 		dragBehavior.useObjectOrienationForDragging = false;
         dragBehavior.onDragStartObservable.add(()=>{
 			mesh.physicsImpostor.sleep();
-            mesh.position.y+= 0.3;
+            mesh.position.y+= 0.7;
         })
         dragBehavior.onDragObservable.add(()=>{
             mesh.physicsImpostor.setLinearVelocity(new BABYLON.Vector3(0,0,0))
