@@ -1,9 +1,9 @@
 function createGUI(){
 	//Create GUI
 	
-	var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+	advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 	
-	var chatrect = new BABYLON.GUI.ScrollViewer();
+	chatrect = new BABYLON.GUI.ScrollViewer();
 	chatrect.background = "black";
 	chatrect.color = "yellow";
 	chatrect.width = "90%";
@@ -12,7 +12,7 @@ function createGUI(){
 	chatrect.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
 	chatrect.alpha = "0.5";
 	
-	var chattext = new BABYLON.GUI.TextBlock();
+	chattext = new BABYLON.GUI.TextBlock();
 	chattext.textWrapping = BABYLON.GUI.TextWrapping.WordWrap;
 	chattext.resizeToFit = true;
 	chattext.text = "Chat Start:";
@@ -23,7 +23,7 @@ function createGUI(){
 	chattext.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
 	chattext.textVerticalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_TOP;
 	
-	var chatinput = new BABYLON.GUI.InputText();
+	chatinput = new BABYLON.GUI.InputText();
 	chatinput.width = "90%";
 	chatinput.fontSize = 14;
 	chatinput.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_BOTTOM;
@@ -37,7 +37,7 @@ function createGUI(){
 	advancedTexture.addControl(chatrect);   
 	advancedTexture.addControl(chatinput); 
 	
-	var button1 = BABYLON.GUI.Button.CreateSimpleButton("but1", "Fullscreen");
+	button1 = BABYLON.GUI.Button.CreateSimpleButton("but1", "Fullscreen");
 	button1.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
 	button1.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
 	button1.width = "75px";

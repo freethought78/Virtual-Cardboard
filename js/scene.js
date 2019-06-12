@@ -30,7 +30,8 @@ function createScene(){
 			}
 		}
 	);
-	
+
+/*	
 	scene.onKeyboardObservable.add((e)=>{
 		if ((e.event.key=="Enter") && (e.event.type=="keyup")){
 			chattext.text += "\n"+ chatinput.text;
@@ -38,8 +39,7 @@ function createScene(){
 			chatrect.verticalBar._value = 1;
 		}
 	})
-	
-	
+*/
 	// attach camera to the canvas
 	camera.attachControl(canvas, true);
 
