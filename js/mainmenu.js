@@ -7,7 +7,7 @@ function createMainMenu(){
 		
 		'Your Nickname:<br>'+
 		'<div id="nameInputDiv">'+
-		'<input id="nameInput">'+
+		'<input id="nameInput"><br>'+
 		'<button onclick="addConnectionDetails()">Submit Name</button>'+
 		'</div>'+
 		'<br><br>'+

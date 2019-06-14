@@ -8,11 +8,11 @@ function registerEnterKey(conn){
 	});
 }
 
-// this takes the text from the chat input field and sends the contents to the peer
+// takes the text from the chat input field and sends the contents to the peer
 async function submit(conn){
-	chatData = chatinput.text;
+	var chatData = chatinput.text;
 	chatinput.text = "";
-	chatPacket = {type: "chat", user: username, message: chatData};
+	var chatPacket = {type: "chat", user: username, message: chatData};
 	conn.send(chatPacket);
 	post(username + ": " + chatData);
 }
