@@ -28,7 +28,9 @@
 		<script src="js/drag.js"></script>
 		<script src="js/scene.js"></script>
 		<script src="js/startengine.js"></script>
-		
+		<script src="js/mainmenu.js"></script>
+		<script src="js/network.js"></script>
+		<script src="js/chat.js"></script>
 		
 		<!-- Networking -->
 		<script src="js/peerjs.js"></script>
@@ -42,116 +44,7 @@
 <body>
 </body>
 <script>
+// create main menu from js/mainmenu.js
 createMainMenu();
-function createMainMenu(){
-	//populate page
-	$("body").html(		
-		'<center>'+
-		'<div id="pageContent">'+
-		'<div style="background-color: #57B; color: #222;"><h1>VirtualCardboard</h1></div><br>'+
-
-		'Your ID:'+
-		'<div id="idDiv"></div>'+
-
-		'Refresh the page to generate a new ID.'+
-		'<hr>'+
-		'<br>'+
-		"Enter your friend's ID and press connect:<br>"+
-		'<input id="targetIDinput">'+
-		'<button id="connectButton" onclick="connect()">Connect</button><br>'+
-		'Pressing connect will open your chat to incoming connections.<br>'+
-		'When a successful connection is made, incoming connections will be disabled again.'+
-		'<hr>'+
-		'</div>'+
-		'</center>'
-	);
-	
-	// the id of the connected peer. The initial connection is only one way.
-	// we use 'remote' to check for 2 way connection and only connect back once
-	remote="disconnected";
-	
-	//§§§§§§§§§§-----------Create A Peer ID------------§§§§§§§§§§§§§§§§§
-	//Register as a Peer on the PeerJS cloud
-	peer = new Peer();
-
-	//When peer is registered, add the peer ID to the appropriate Div
-	peer.on('open', function(id) {
-		var idDiv = document.getElementById("idDiv");
-		idDiv.innerHTML += id;
-	});
-}
-	
-//§§§§§§§§§§§§------------Manage connection and handle network data-----------§§§§§§§§§§§§§§§§
-// Outgoing connection is created when 'connect' button is pressed
-function connect(){
-	var targetIDinput = document.getElementById("targetIDinput");
-	var targetID = targetIDinput.value;
-	remote = targetID;
-	conn = peer.connect(remote);
-}
-
-// When incoming connection attempt is recieved create message handlers
-peer.on('connection', function(conn) {
-	//If we only have a one way connection, connect back to the peer
-	if (remote=="disconnected"){
-		remote = conn.peer;
-		conn = peer.connect(remote);
-	}
-	
-	// On successful connection:
-	conn.on('open', function() {
-		//Register the Enter key to send messages.
-		registerEnterKey(conn);
-		
-		//when a message is recieved, post it to the output
-		conn.on('data', async function(data){
-			post(data);
-		});
-		
-		//Start the 3d engine and load the scene using method from external file js/startengine.js
-		startEngine();
-		
-		//notify user that a connection was established
-		post("-----Connection Established------");
-	});
-	
-
-});
-
-// this prints a message to the output div, in the specified color
-function post(message){
-	//if an incoming message attempts to close the xmp tag which contains the message
-	//and prevents html from rendering, notify client of malicious code attempt
-	
-	// if no problems were detected, display the message
-	chattext.text += "\n"+ message;
-	
-	// scroll to the bottom of the chat after message is added
-	scrollbottom();
-}
-
-//§§§§§§§§§§§§--------------Chat Interface----------§§§§§§§§§§§§
-// this registers the 'enter' key to send a message to the peer
-function registerEnterKey(conn){
-	$(document).keypress(function(e) {
-		if(e.which == 13) {
-			submit(conn);
-		}
-	});
-}
-
-// this takes the text from the chat input field and sends the contents to the peer
-async function submit(conn){
-	chatData = chatinput.text;
-	chatinput.text = "";
-	conn.send(chatData);
-	post(chatData);
-}
-
-// when the output div is full and can be scrolled down,
-// this keeps the output div scrolled to the bottom of the div.
-function scrollbottom(){
-	chatrect.verticalBar._value = 1;
-}
 </script>
 </html>
