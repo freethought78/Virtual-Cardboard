@@ -1,3 +1,7 @@
+// the peer will only send update packets every frame when it is the master peer
+// currently, the peer becomes the master when he is dragging a piece
+peerIsMaster = false;
+
 function createNetworkID(){
 	// the id of the connected peer. The initial connection is only one way.
 	// we use 'remote' to check for 2 way connection and only connect back once
@@ -31,6 +35,7 @@ function registerConnectionHandlers(){
 		if (remote=="disconnected"){
 			remote = conn.peer;
 			conn = peer.connect(remote);
+			
 		}
 		
 		// On successful connection:
@@ -38,20 +43,60 @@ function registerConnectionHandlers(){
 			//Register the Enter key to send messages.
 			registerEnterKey(conn);
 			
-			//when a message is recieved, post it to the output
+			//Manage different types of network traffic
 			conn.on('data', async function(data){
+				//when a chat message is recieved, post it to the output
 				if(data.type == "chat"){
 					var sender = data.user;
 					var message = data.message;
 					post(sender + ": " + message);
+				}
+				//when a state message is recieved, updated all pieces on the board
+				if(data.type == 'state'){
+					var states = JSON.parse(data.states);
+					
+					for (x in states){
+						var id = states[x].id;
+						var p = JSON.parse(states[x].position);
+						var r = JSON.parse(states[x].rotation);
+						pieces[id].position = p;
+						pieces[id].rotationQuaternion = new BABYLON.Quaternion(r.x, r.y, r.z, r.w);
+					}
 				}
 			});
 			
 			//Start the 3d engine and load the scene using method from external file js/startengine.js
 			startEngine();
 			
+			
 			//notify user that a connection was established
 			post("-----Connection Established------");
+			
+			// Sychronize scenes between peers
+			synchronizeScenes(conn);
 		});
 	});
+}
+
+// after every frame is rendered, send the updated state of all pieces to connected peer
+function synchronizeScenes(conn){
+	scene.onAfterDrawPhaseObservable.add(
+		function(){
+			if (peerIsMaster){
+				updateRemoteBoard(conn);
+			}
+		}
+	);
+}
+
+//sends the local state of the board to the connected peer once
+function updateRemoteBoard(conn){
+
+	var states = [];
+	for (x in pieces){
+		states.push({id:x, position:JSON.stringify(pieces[x].position), rotation:JSON.stringify(pieces[x].rotationQuaternion)});
+	}
+	
+	var statePacket = {type: "state", states:JSON.stringify(states)};
+	conn.send(statePacket);
 }
