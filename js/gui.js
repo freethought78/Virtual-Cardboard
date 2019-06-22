@@ -47,7 +47,7 @@ function createGUI(){
 	button1.cornerRadius = 5;
 	button1.background = "darkblue";
 	button1.onPointerUpObservable.add(function() {
-		engine.enterFullscreen();
+		engine.switchFullscreen();
 	});
 	advancedTexture.addControl(button1);    
 	
