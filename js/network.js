@@ -6,6 +6,9 @@ function createNetworkID(){
 	// the id of the connected peer. The initial connection is only one way.
 	// we use 'remote' to check for 2 way connection and only connect back once
 	remote="disconnected";
+	// serverID will hold the ID of the peer that will be treated as the serverID
+	// the server is the peer recieving incoming connections
+	serverID="disconnected";
 	
 	//§§§§§§§§§§-----------Create A Peer ID------------§§§§§§§§§§§§§§§§§
 	//Register as a Peer on the PeerJS cloud
@@ -25,6 +28,7 @@ function connect(){
 	var targetIDinput = document.getElementById("targetIDinput");
 	var targetID = targetIDinput.value;
 	remote = targetID;
+	if(serverID == "disconnected"){serverID = remote};
 	conn = peer.connect(remote);
 }
 
@@ -34,8 +38,8 @@ function registerConnectionHandlers(){
 		//If we only have a one way connection, connect back to the peer
 		if (remote=="disconnected"){
 			remote = conn.peer;
+			serverID = peer.id;
 			conn = peer.connect(remote);
-			
 		}
 		
 		// On successful connection:

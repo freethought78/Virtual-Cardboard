@@ -27,26 +27,24 @@ function createMainMenu(){
 function addConnectionDetails(){
 	if(validateName()==false){
 	} else {
-	//Replace name input with a static representation of users name	
-	replaceNameInput();
-	
-	$("#pageContent").append(
-		'Your ID:'+
-		'<div id="idDiv"></div>'+
+		//Replace name input with a static representation of users name	
+		replaceNameInput();
+		
+		$("#pageContent").append(
+			'Your ID:'+
+			'<div id="idDiv"></div>'+
 
-		'Refresh the page to generate a new ID.'+
-		'<hr>'+
-		'<br>'+
-		"Enter your friend's ID and press connect:<br>"+
-		'<input id="targetIDinput">'+
-		'<button id="connectButton" onclick="connect()">Connect</button><br>'+
-		'Pressing connect will open your chat to incoming connections.<br>'+
-		'When a successful connection is made, incoming connections will be disabled again.'+
-		'<hr>'
-	);
-	
-	// create a PeerJS network id (located in js/networking.js)
-	createNetworkID();
+			'Refresh the page to generate a new ID.'+
+			'<hr>'+
+			'<br>'+
+			"Enter your friend's ID and press connect:<br>"+
+			'<input id="targetIDinput">'+
+			'<button id="connectButton" onclick="connect()">Connect</button><br>'+
+			'<hr>'
+		);
+		
+		// create a PeerJS network id (located in js/networking.js)
+		createNetworkID();
 	}
 	
 	//pressing enter on the target ID input will do the same as pressing connect

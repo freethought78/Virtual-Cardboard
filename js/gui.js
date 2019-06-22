@@ -51,15 +51,20 @@ function createGUI(){
 	});
 	advancedTexture.addControl(button1);    
 	
-	serverIDrect = new BABYLON.GUI.TextBlock();
+	serverIDrect = BABYLON.GUI.Button.CreateSimpleButton("serverIDbutton", "Server ID:\n"+serverID);
 	serverIDrect.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
 	serverIDrect.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
-	serverIDrect.text = "Server ID:\nPlaceholder";
 	serverIDrect.color = "white";
 	serverIDrect.fontSize = "2%";
 	serverIDrect.resizeToFit = true;
-	serverIDrect.paddingRight = "1%";
-	serverIDrect.paddingTop = "1%";
+	serverIDrect.background = "black";
+	serverIDrect.alpha = "0.5";
+	serverIDrect.height = "7%";
+	serverIDrect.width = "12%";
+	serverIDrect.onPointerUpObservable.add(function(){
+		copyToClipboard(serverID);
+		alert("Server ID copied to clipboard.");
+	});
 	advancedTexture.addControl(serverIDrect);
 	
 	peerListRect = new BABYLON.GUI.TextBlock();
@@ -75,4 +80,15 @@ function createGUI(){
 	advancedTexture.addControl(peerListRect);
 }
 
-
+function copyToClipboard(text) {
+    var dummy = document.createElement("textarea");
+    // to avoid breaking orgain page when copying more words
+    // cant copy when adding below this code
+    // dummy.style.display = 'none'
+    document.body.appendChild(dummy);
+    //Be careful if you use texarea. setAttribute('value', value), which works with "input" does not work with "textarea". – Eduard
+    dummy.value = text;
+    dummy.select();
+    document.execCommand("copy");
+    document.body.removeChild(dummy);
+}
