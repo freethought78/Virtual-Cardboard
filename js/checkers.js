@@ -15,7 +15,7 @@ function createCheckersScene(){
 	redpiececolor = new BABYLON.StandardMaterial("redpiececolor", scene);
 	blackpiececolor = new BABYLON.StandardMaterial("blackpiececolor", scene);
 	redpiececolor.diffuseColor = new BABYLON.Color3(1,0,0);
-	blackpiececolor.diffuseColor = new BABYLON.Color3(30/255,15/255,0);
+	blackpiececolor.diffuseColor = new BABYLON.Color3(40/255,15/255,0);
 	
 	
 	pieces = [];
