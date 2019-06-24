@@ -7,7 +7,7 @@ function createCheckersScene(){
 	
 	// Load Texture for board
 	boardImage = new BABYLON.StandardMaterial("boardImage", scene);
-	boardImage.diffuseTexture = new BABYLON.Texture("https://images-na.ssl-images-amazon.com/images/I/61bBzK2dRFL._SL1013_.jpg", scene);
+	boardImage.diffuseTexture = new BABYLON.Texture("https://i.imgur.com/EzkZgbc.jpg", scene);
 	boardImage.activeLight = light1;
 	board.material = boardImage;
 				
@@ -15,7 +15,7 @@ function createCheckersScene(){
 	redpiececolor = new BABYLON.StandardMaterial("redpiececolor", scene);
 	blackpiececolor = new BABYLON.StandardMaterial("blackpiececolor", scene);
 	redpiececolor.diffuseColor = new BABYLON.Color3(1,0,0);
-	blackpiececolor.diffuseColor = new BABYLON.Color3(40/255,15/255,0);
+	blackpiececolor.diffuseColor = new BABYLON.Color3(0.1,0.1,0.1);
 	
 	
 	pieces = [];
