@@ -6,7 +6,7 @@ function makeDraggable(mesh){
 	dragBehavior.onDragStartObservable.add(()=>{
 		mesh.physicsImpostor.sleep();
 		mesh.position.y+= 4;
-		peerIsMaster = true;
+		peerIsDragging = true;
 	})
 	dragBehavior.onDragObservable.add(()=>{
 		mesh.physicsImpostor.setLinearVelocity(new BABYLON.Vector3(0,0,0))
@@ -16,6 +16,6 @@ function makeDraggable(mesh){
 		if(mesh.physicsImpostor){
 			mesh.physicsImpostor.wakeUp()
 		}
-		peerIsMaster = false;
+		peerIsDragging = false;
 	})
 };

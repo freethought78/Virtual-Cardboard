@@ -1,6 +1,6 @@
 // the peer will only send update packets every frame when it is the master peer
 // currently, the peer becomes the master when he is dragging a piece
-peerIsMaster = false;
+peerIsDragging = false;
 
 function createNetworkID(){
 	// the id of the connected peer. The initial connection is only one way.
@@ -86,7 +86,7 @@ function registerConnectionHandlers(){
 function synchronizeScenes(conn){
 	scene.onAfterDrawPhaseObservable.add(
 		function(){
-			if (peerIsMaster){
+			if (peerIsDragging){
 				updateRemoteBoard(conn);
 			}
 		}
