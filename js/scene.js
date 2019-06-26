@@ -18,15 +18,19 @@ function createScene(){
 	camera.keysLeft.push(65);  //A
 	camera.keysRight.push(68); //S
 	
+	var chatFocused;
 	scene.onBeforeRenderObservable.add(
 		function(){
-			//Spacebar
-			if (keys[32] == true){
-				camera.position.y += 0.02*engine.getDeltaTime();
-			}
-			//Left Control
-			if (keys[17] == true){
-				camera.position.y -= 0.02*engine.getDeltaTime();
+			// if the chat is not focused, allow these keys to move the camera
+			if(chatFocused == false){	
+				//Spacebar
+				if (keys[32] == true){
+					camera.position.y += 0.02*engine.getDeltaTime();
+				}
+				//Left Control
+				if (keys[17] == true){
+					camera.position.y -= 0.02*engine.getDeltaTime();
+				}
 			}
 		}
 	);
