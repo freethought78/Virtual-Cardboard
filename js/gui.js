@@ -34,6 +34,7 @@ function createGUI(){
 	chatinput.background = "black";
 	// chatFocused lets us know whether the user is trying to chat
 	// its used for keeping the keypresses from moving the camera when chat is focused
+	// it is defined in controls.js;
 	chatinput.onFocusObservable.add(function(){chatFocused = true;});
 	chatinput.onBlurObservable.add(function(){chatFocused = false;});
 	
