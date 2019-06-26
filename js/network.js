@@ -55,10 +55,22 @@ function registerConnectionHandlers(){
 					var message = data.message;
 					post(sender + ": " + message);
 				}
-				//when a state message is recieved, updated all pieces on the board
+				//when a state message is recieved, update all pieces on the board
 				if(data.type == 'state'){
 					var states = JSON.parse(data.states);
 					
+					// if no piece is being dragged, enable gravity on all pieces.
+					// else disable gravity on dragged piece.
+					var dp = data.draggedPiece;
+					if (dp == "none"){
+						for(x in states){
+							pieces[x].physicsImpostor.wakeUp()
+						}
+					}else{
+						pieces[dp].physicsImpostor.sleep();
+					}
+					
+					// when state update packet is recieved, update position and rotation of all pieces.
 					for (x in states){
 						var id = states[x].id;
 						var p = JSON.parse(states[x].position);
@@ -89,18 +101,21 @@ function synchronizeScenes(conn){
 			if (peerIsDragging){
 				updateRemoteBoard(conn);
 			}
+			if (endRemoteDrag == true){
+				updateRemoteBoard(conn);
+				endRemoteDrag = false;
+			}
 		}
 	);
 }
 
 //sends the local state of the board to the connected peer once
 function updateRemoteBoard(conn){
-
 	var states = [];
 	for (x in pieces){
-		states.push({id:x, position:JSON.stringify(pieces[x].position), rotation:JSON.stringify(pieces[x].rotationQuaternion)});
+		states.push({id:x, position:JSON.stringify(pieces[x].position), rotation:JSON.stringify(pieces[x].rotationQuaternion),});
 	}
 	
-	var statePacket = {type: "state", states:JSON.stringify(states)};
+	var statePacket = {type: "state", states:JSON.stringify(states), draggedPiece: draggedPiece};
 	conn.send(statePacket);
 }

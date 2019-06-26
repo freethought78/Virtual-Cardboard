@@ -74,7 +74,7 @@ function createCheckersScene(){
 	for (x in pieces){
 		pieces[x].physicsImpostor = new BABYLON.PhysicsImpostor(pieces[x], BABYLON.PhysicsImpostor.CylinderImpostor, { mass: 10, restitution: 0.2 }, scene);
 		pieces[x].actionManager = new BABYLON.ActionManager(scene);
-		makeDraggable(pieces[x]);
+		makeDraggable(pieces[x], x);
 	}
 	
 	// Allow Pieces to cast shadows onto board
