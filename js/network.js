@@ -2,6 +2,17 @@
 // currently, the peer becomes the master when he is dragging a piece
 peerIsDragging = false;
 
+// lets us know if this client is also the server.
+// it defaultws to false and sets itself to true when successfully taking incoming connections
+actingServer = false;
+
+// on the server, we store an array of connections to all of the connected peers.
+// non server peers will not use this array.
+connections = [];
+
+// a list of the names of connected clients
+peerList = [];
+
 function createNetworkID(){
 	// the id of the connected peer. The initial connection is only one way.
 	// we use 'remote' to check for 2 way connection and only connect back once
@@ -29,7 +40,7 @@ function connect(){
 	var targetID = targetIDinput.value;
 	remote = targetID;
 	if(serverID == "disconnected"){serverID = remote};
-	conn = peer.connect(remote);
+	conn = peer.connect(remote, {metadata: {name: username}});
 }
 
 // When incoming connection attempt is recieved create message handlers
@@ -39,7 +50,10 @@ function registerConnectionHandlers(){
 		if (remote=="disconnected"){
 			remote = conn.peer;
 			serverID = peer.id;
+			actingServer = true;
+			var remoteName = conn.metadata.name;
 			conn = peer.connect(remote);
+			
 		}
 		
 		// On successful connection:
@@ -79,8 +93,13 @@ function registerConnectionHandlers(){
 						pieces[id].rotationQuaternion = new BABYLON.Quaternion(r.x, r.y, r.z, r.w);
 					}
 				}
+				
+				if(data.type == 'peerListUpdate'){
+					peerList = JSON.parse(data.list);
+				}
 			});
 			
+		
 			//Start the 3d engine and load the scene using method from external file js/startengine.js
 			startEngine();
 			
@@ -90,7 +109,14 @@ function registerConnectionHandlers(){
 			
 			// Sychronize scenes between peers
 			synchronizeScenes(conn);
+			
+			if (actingServer == true){
+				connections.push({name: remoteName, connection:conn});
+				updateRemotePeerLists();
+			}
+			
 		});
+		
 	});
 }
 
@@ -118,4 +144,15 @@ function updateRemoteBoard(conn){
 	
 	var statePacket = {type: "state", states:JSON.stringify(states), draggedPiece: draggedPiece};
 	conn.send(statePacket);
+}
+
+function updateRemotePeerLists(){
+	peerList = [];
+	peerList.push(username);
+	for (peer in connections){
+		peerList.push(connections[peer].name);
+	}
+	for (peer in connections){
+		connections[peer].connection.send({type: "peerListUpdate", list: JSON.stringify(peerList)});
+	}
 }

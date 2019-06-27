@@ -84,6 +84,14 @@ function createGUI(){
 	peerListRect.resizeToFit = true;
 	peerListRect.paddingRight = "1%";
 	advancedTexture.addControl(peerListRect);
+	scene.onAfterDrawPhaseObservable.add(function(){updateGUIpeerList()});
+}
+
+function updateGUIpeerList(){
+	peerListRect.text = "Peers:";
+	for (name in peerList){
+		peerListRect.text += "\n"+peerList[name];
+	}
 }
 
 function copyToClipboard(text) {
