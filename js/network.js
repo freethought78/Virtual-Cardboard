@@ -4,7 +4,7 @@ peerIsDragging = false;
 
 // lets us know if this client is also the server.
 // it defaultws to false and sets itself to true when successfully taking incoming connections
-actingServer = false;
+actingServer = "none";
 
 // on the server, we store an array of connections to all of the connected peers.
 // non server peers will not use this array.
@@ -12,6 +12,9 @@ connections = [];
 
 // a list of the names of connected clients
 peerList = [];
+
+// keeps track of whether the engine has been started so we dont start it again every time a new connection is made to the server
+var engineStarted = false;
 
 function createNetworkID(){
 	// the id of the connected peer. The initial connection is only one way.
@@ -41,19 +44,21 @@ function connect(){
 	remote = targetID;
 	if(serverID == "disconnected"){serverID = remote};
 	conn = peer.connect(remote, {metadata: {name: username}});
+	actingServer = false;
 }
 
 // When incoming connection attempt is recieved create message handlers
 function registerConnectionHandlers(){
 	peer.on('connection', function(conn) {
+		// If this is the first incoming connection, an no outgoing connections have been made yet, this is now the acting server
+		if(actingServer == "none"){actingServer = true};
+		
 		//If we only have a one way connection, connect back to the peer
-		if (remote=="disconnected"){
+		if (actingServer == true){
 			remote = conn.peer;
 			serverID = peer.id;
-			actingServer = true;
 			var remoteName = conn.metadata.name;
 			conn = peer.connect(remote);
-			
 		}
 		
 		// On successful connection:
@@ -69,8 +74,19 @@ function registerConnectionHandlers(){
 					var message = data.message;
 					post(sender + ": " + message);
 				}
+				
 				//when a state message is recieved, update all pieces on the board
 				if(data.type == 'state'){
+					//servers should rebroadcast state changes to all clients except the sender
+					if (actingServer == true){
+						var peerID = data.peerID;
+						for (var currentPeer in connections){
+							if (peerID != connections[currentPeer].id){
+								connections[currentPeer].connection.send(data);
+							}
+						}
+					}
+					
 					var states = JSON.parse(data.states);
 					
 					// if no piece is being dragged, enable gravity on all pieces.
@@ -101,7 +117,10 @@ function registerConnectionHandlers(){
 			
 		
 			//Start the 3d engine and load the scene using method from external file js/startengine.js
-			startEngine();
+			if (engineStarted == false){
+				startEngine();
+				engineStarted = true;
+			}
 			
 			
 			//notify user that a connection was established
@@ -111,7 +130,7 @@ function registerConnectionHandlers(){
 			synchronizeScenes(conn);
 			
 			if (actingServer == true){
-				connections.push({name: remoteName, connection:conn});
+				connections.push({name: remoteName, connection:conn, id:conn.peer});
 				updateRemotePeerLists();
 			}
 			
@@ -142,17 +161,26 @@ function updateRemoteBoard(conn){
 		states.push({id:x, position:JSON.stringify(pieces[x].position), rotation:JSON.stringify(pieces[x].rotationQuaternion),});
 	}
 	
-	var statePacket = {type: "state", states:JSON.stringify(states), draggedPiece: draggedPiece};
-	conn.send(statePacket);
+	var statePacket = {type: "state", states:JSON.stringify(states), draggedPiece: draggedPiece, peerID: peer.id};
+	
+	// clients send board updates to the server, the server sends board updates to all clients.
+	// updates originating from non server clients still need to be rebroadcast by the server in the packet handler
+	if(actingServer == false){
+		conn.send(statePacket);
+	} else {
+		for (var currentPeer in connections){
+			connections[currentPeer].connection.send(statePacket);
+		}
+	}
 }
 
 function updateRemotePeerLists(){
 	peerList = [];
 	peerList.push(username);
-	for (peer in connections){
-		peerList.push(connections[peer].name);
+	for (var currentPeer in connections){
+		peerList.push(connections[currentPeer].name);
 	}
-	for (peer in connections){
-		connections[peer].connection.send({type: "peerListUpdate", list: JSON.stringify(peerList)});
+	for (var currentPeer in connections){
+		connections[currentPeer].connection.send({type: "peerListUpdate", list: JSON.stringify(peerList)});
 	}
 }
