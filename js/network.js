@@ -113,6 +113,10 @@ function registerConnectionHandlers(){
 				if(data.type == 'peerListUpdate'){
 					peerList = JSON.parse(data.list);
 				}
+				
+				if(data.type == "requestBoardUpdate"){
+					updateRemoteBoard(conn);
+				}
 			});
 			
 		
@@ -120,6 +124,7 @@ function registerConnectionHandlers(){
 			if (engineStarted == false){
 				startEngine();
 				engineStarted = true;
+				requestBoardUpdate(conn);
 			}
 			
 			
@@ -183,4 +188,8 @@ function updateRemotePeerLists(){
 	for (var currentPeer in connections){
 		connections[currentPeer].connection.send({type: "peerListUpdate", list: JSON.stringify(peerList)});
 	}
+}
+
+function requestBoardUpdate(serverConnection){
+	serverConnection.send({type: "requestBoardUpdate"});
 }
