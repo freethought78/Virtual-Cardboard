@@ -32,6 +32,7 @@ function createNetworkID(){
 	peer.on('open', function(id) {
 		var idDiv = document.getElementById("idDiv");
 		idDiv.innerHTML += id;
+		peerID = peer.id;
 	});
 	registerConnectionHandlers();
 }
@@ -63,8 +64,7 @@ function registerConnectionHandlers(){
 		
 		// On successful connection:
 		conn.on('open', function() {
-			//Register the Enter key to send messages.
-			registerEnterKey(conn);
+
 			
 			//Manage different types of network traffic
 			conn.on('data', async function(data){
@@ -73,19 +73,12 @@ function registerConnectionHandlers(){
 					var sender = data.user;
 					var message = data.message;
 					post(sender + ": " + message);
+					rebroadcast(data);
 				}
 				
 				//when a state message is recieved, update all pieces on the board
 				if(data.type == 'state'){
-					//servers should rebroadcast state changes to all clients except the sender
-					if (actingServer == true){
-						var peerID = data.peerID;
-						for (var currentPeer in connections){
-							if (peerID != connections[currentPeer].id){
-								connections[currentPeer].connection.send(data);
-							}
-						}
-					}
+					rebroadcast(data);
 					
 					var states = JSON.parse(data.states);
 					
@@ -125,6 +118,7 @@ function registerConnectionHandlers(){
 				startEngine();
 				engineStarted = true;
 				requestBoardUpdate(conn);
+				registerEnterKey(conn);
 			}
 			
 			
@@ -170,13 +164,7 @@ function updateRemoteBoard(conn){
 	
 	// clients send board updates to the server, the server sends board updates to all clients.
 	// updates originating from non server clients still need to be rebroadcast by the server in the packet handler
-	if(actingServer == false){
-		conn.send(statePacket);
-	} else {
-		for (var currentPeer in connections){
-			connections[currentPeer].connection.send(statePacket);
-		}
-	}
+	broadcast(statePacket, conn);
 }
 
 function updateRemotePeerLists(){
@@ -192,4 +180,23 @@ function updateRemotePeerLists(){
 
 function requestBoardUpdate(serverConnection){
 	serverConnection.send({type: "requestBoardUpdate"});
+}
+
+//rebroadcast state changes to all clients except the sender
+function rebroadcast(packet){
+	if(actingServer == true){
+		for(var currentPeer in connections){
+			if(packet.peerID != connections[currentPeer].id){
+				connections[currentPeer].connection.send(packet);
+			}
+		}
+	}
+}
+
+function broadcast(packet, conn){
+	if (actingServer == false){
+		conn.send(packet);
+	}else{
+		rebroadcast(packet);
+	}
 }

@@ -9,11 +9,11 @@ function registerEnterKey(conn){
 }
 
 // takes the text from the chat input field and sends the contents to the peer
-async function submit(conn){
+function submit(conn){
 	var chatData = chatinput.text;
 	chatinput.text = "";
-	var chatPacket = {type: "chat", user: username, message: chatData};
-	conn.send(chatPacket);
+	var chatPacket = {type: "chat", user: username, message: chatData, peerID: peerID};
+	broadcast(chatPacket, conn);
 	post(username + ": " + chatData);
 }
 
