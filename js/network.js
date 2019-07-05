@@ -54,12 +54,15 @@ function registerConnectionHandlers(){
 		// If this is the first incoming connection, an no outgoing connections have been made yet, this is now the acting server
 		if(actingServer == "none"){actingServer = true};
 		
+		// Store nickname of incoming connection on either server or client
+		var remoteName = conn.metadata.name;
+		
 		//If we only have a one way connection, connect back to the peer
 		if (actingServer == true){
 			remote = conn.peer;
 			serverID = peer.id;
-			var remoteName = conn.metadata.name;
-			conn = peer.connect(remote);
+			
+			conn = peer.connect(remote, {metadata: {name: username}});
 		}
 		
 		// On successful connection:
@@ -110,6 +113,10 @@ function registerConnectionHandlers(){
 				if(data.type == "requestBoardUpdate"){
 					updateRemoteBoard(conn);
 				}
+				
+				if(data.type=="connect"){
+					post("-----"+data.name+" connected to the server-----");
+				}
 			});
 			
 		
@@ -123,7 +130,13 @@ function registerConnectionHandlers(){
 			
 			
 			//notify user that a connection was established
-			post("-----Connection Established------");
+			if (actingServer==true){
+				post("-----Incoming Connection from "+remoteName+"-----");
+				var connectionPacket = {type: "connect", name:remoteName, peerID:conn.peer};
+				broadcast(connectionPacket);
+			} else {
+				post ("-----Connected to "+remoteName+"'s server-----");
+			}
 			
 			// Sychronize scenes between peers
 			synchronizeScenes(conn);
