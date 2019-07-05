@@ -77,11 +77,13 @@ function createGUI(){
 	peerListRect.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
 	peerListRect.verticalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_TOP;
 	peerListRect.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+	peerListRect.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
 	peerListRect.text = "Peers:\nYou\nMe\nPlaceholder";
 	peerListRect.color = "lightblue";
 	peerListRect.fontSize = "2%";
 	peerListRect.top = "10%";
-	peerListRect.resizeToFit = true;
+	peerListRect.width = "12%";
+	//peerListRect.resizeToFit = true;
 	peerListRect.paddingRight = "1%";
 	advancedTexture.addControl(peerListRect);
 	scene.onAfterDrawPhaseObservable.add(function(){updateGUIpeerList()});
