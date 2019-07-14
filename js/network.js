@@ -50,6 +50,7 @@ function connect(){
 
 // When incoming connection attempt is recieved create message handlers
 function registerConnectionHandlers(){
+
 	peer.on('connection', function(conn) {
 		// If this is the first incoming connection, an no outgoing connections have been made yet, this is now the acting server
 		if(actingServer == "none"){actingServer = true};
@@ -64,6 +65,10 @@ function registerConnectionHandlers(){
 			
 			conn = peer.connect(remote, {metadata: {name: username}});
 		}
+		
+		conn.on('close', function(){
+			removeDeadConnections();
+		});
 		
 		// On successful connection:
 		conn.on('open', function() {
@@ -106,16 +111,24 @@ function registerConnectionHandlers(){
 					}
 				}
 				
+				// this packet is set from the server containing a list of connected peers
 				if(data.type == 'peerListUpdate'){
 					peerList = JSON.parse(data.list);
 				}
 				
+				// A client sends this packet to the server to get a board state update packet in return
 				if(data.type == "requestBoardUpdate"){
 					updateRemoteBoard(conn);
 				}
 				
+				// A connect packet is sent from the server to the clien list when a new client has connected to the server
 				if(data.type=="connect"){
 					post("-----"+data.name+" connected to the server-----");
+				}
+				
+				// A droppedConnection packet is sent from the server to the client list when a client has lost connections
+				if(data.type=='droppedConnection'){
+					post("-----"+data.name+" left the server-----");
 				}
 			});
 			
@@ -149,6 +162,8 @@ function registerConnectionHandlers(){
 		});
 		
 	});
+	
+
 }
 
 // after every frame is rendered, send the updated state of all pieces to connected peer
@@ -178,6 +193,24 @@ function updateRemoteBoard(conn){
 	// clients send board updates to the server, the server sends board updates to all clients.
 	// updates originating from non server clients still need to be rebroadcast by the server in the packet handler
 	broadcast(statePacket, conn);
+}
+
+// If this is the acting server loop through the list of connections in reverse, eliminating dead connections from the list
+// then broadcast the updated list to the clients
+function removeDeadConnections(){
+	if(actingServer == true){
+		for (var currentPeer = connections.length -1; currentPeer>=0; currentPeer--){
+			if(connections[currentPeer].connection.open == false){
+				var name = connections[currentPeer].name;
+				var id = connections[currentPeer].id;
+				var disconnectPacket = {type: "droppedConnection", name: name, PeerID: id};
+				post("-----"+name+" left the server-----");
+				broadcast(disconnectPacket);
+				connections.splice(currentPeer, 1);
+			}
+		}
+		updateRemotePeerLists();
+	}
 }
 
 function updateRemotePeerLists(){
