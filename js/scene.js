@@ -25,6 +25,26 @@ function createScene(){
 	light2.intensity = 0.5;
 	light3.intensity = 0.5;
 	
+	//Add transparent floor to scene
+	floor = BABYLON.MeshBuilder.CreatePlane("floor", {width:200, height:1, depth:200}, scene);
+	floor.position.y = -50;
+	floor.physicsImpostor = new BABYLON.PhysicsImpostor(floor, BABYLON.PhysicsImpostor.PlaneImpostor, { mass: 0, restitution: 0.9 }, scene);
+	floorcolor = new BABYLON.StandardMaterial("floorcolor", scene);
+	floorcolor.alpha = 0;
+	floor.material = floorcolor;
+	
+	//Add Skybox
+	var skyMaterial = new BABYLON.SkyMaterial("skyMaterial", scene);
+	skyMaterial.backFaceCulling = false;
+	skyMaterial.inclination = 0; 
+	skyMaterial.azimuth = 0.42;
+	skyMaterial.cameraOffset.y = 50;
+	skyMaterial.luminance = 1,189;
+	
+	var skybox = BABYLON.Mesh.CreateBox("skyBox", 1000.0, scene);
+	skybox.material = skyMaterial;
+	
+	
 	//Create components of checkers scene from external file js/checkers.js
 	createCheckersScene();
 	//Create GUI from external file js/GUI.js

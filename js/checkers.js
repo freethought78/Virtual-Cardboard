@@ -1,5 +1,5 @@
 function createCheckersScene(){
-	// Add and manipulate meshes in the scene
+	// Add board to scene
 	board = BABYLON.MeshBuilder.CreateBox("board", {height:1, width:50, depth:50}, scene);
 	board.position.y = 1;
 	board.physicsImpostor = new BABYLON.PhysicsImpostor(board, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, scene);
