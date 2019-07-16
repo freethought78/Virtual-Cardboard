@@ -1,6 +1,7 @@
 //populate page
 function createMainMenu(){
 	$("body").html(
+		'<button style="float:left; background-color:green" onclick="startSinglePlayer()">Single Player</button>'+
 		'<center>'+
 		'<div id="pageContent">'+
 		'<div style="background-color: #57B; color: #222;"><h1>VirtualCardboard</h1></div><br>'+
@@ -17,10 +18,10 @@ function createMainMenu(){
 	
 	//Enter pressed inside nickname input is the same as pressing the submit button
 	$("#nameInput").on('keyup', function (e) {
-    if (e.keyCode == 13) {
-        addConnectionDetails();
-    }
-});
+		if (e.keyCode == 13) {
+			addConnectionDetails();
+		}
+	});
 }
 
 //add connection details to page
@@ -67,4 +68,9 @@ function replaceNameInput(){
 	//stores the users name after being validated
 	username = $("#nameInput").val();
 	$("#nameInputDiv").html(username);
+}
+
+function startSinglePlayer(){
+	serverID="disconnected";
+	startEngine();
 }
