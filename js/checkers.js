@@ -21,7 +21,7 @@ function createCheckersScene(){
 	pieces = [];
 	// Create red pieces
 	for (var x=0; x<4; x++){
-		pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("peice"+x, {height:1, diameter:5}, scene);
+		pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("piece"+x, {height:1, diameter:5}, scene);
 		pieces[x].position.y = 2;
 		pieces[x].position.x = (x*11) - 19.3;
 		pieces[x].position.z = 19;
@@ -29,7 +29,7 @@ function createCheckersScene(){
 	}
 	for (var y=0; y<4; y++){
 		var x = y+4;
-		pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("peice"+x, {height:1, diameter:5}, scene);
+		pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("piece"+x, {height:1, diameter:5}, scene);
 		pieces[x].position.y = 2;
 		pieces[x].position.x = (y*11) - 19.3;
 		pieces[x].position.z = 8;
@@ -37,7 +37,7 @@ function createCheckersScene(){
 	}
 	for (var y=0; y<4; y++){
 		var x = y+8;
-		pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("peice"+x, {height:1, diameter:5}, scene);
+		pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("piece"+x, {height:1, diameter:5}, scene);
 		pieces[x].position.y = 2;
 		pieces[x].position.x = (y*11) - 14;
 		pieces[x].position.z = 14;
@@ -47,7 +47,7 @@ function createCheckersScene(){
 	//Create black pieces
 	for (var y=0; y<4; y++){
 		var x=y+12;
-		pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("peice"+x, {height:1, diameter:5}, scene);
+		pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("piece"+x, {height:1, diameter:5}, scene);
 		pieces[x].position.y = 2;
 		pieces[x].position.x = (y*11) - 14;
 		pieces[x].position.z = -19;
@@ -55,7 +55,7 @@ function createCheckersScene(){
 	}
 	for (var y=0; y<4; y++){
 		var x = y+16;
-		pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("peice"+x, {height:1, diameter:5}, scene);
+		pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("piece"+x, {height:1, diameter:5}, scene);
 		pieces[x].position.y = 2;
 		pieces[x].position.x = (y*11) - 19.3;
 		pieces[x].position.z = -14;
@@ -63,7 +63,7 @@ function createCheckersScene(){
 	}
 	for (var y=0; y<4; y++){
 		var x = y+20;
-		pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("peice"+x, {height:1, diameter:5}, scene);
+		pieces[x] =  BABYLON.MeshBuilder.CreateCylinder("piece"+x, {height:1, diameter:5}, scene);
 		pieces[x].position.y = 2;
 		pieces[x].position.x = (y*11) - 14;
 		pieces[x].position.z = -8;
@@ -71,19 +71,39 @@ function createCheckersScene(){
 	}
 	
 	// Make all pieces draggable
-	for (x in pieces){
+	for (var x in pieces){
 		pieces[x].physicsImpostor = new BABYLON.PhysicsImpostor(pieces[x], BABYLON.PhysicsImpostor.CylinderImpostor, { mass: 10, restitution: 0.2 }, scene);
 		pieces[x].actionManager = new BABYLON.ActionManager(scene);
 		makeDraggable(pieces[x], x);
 	}
 	
+	//register right click behaviors for each piece
+	for (var x in pieces){
+		pieces[x].actionManager = new BABYLON.ActionManager(scene);
+		pieces[x].actionManager.registerAction(
+			new BABYLON.ExecuteCodeAction(
+				BABYLON.ActionManager.OnRightPickTrigger,
+				function(x){
+					var meshID = x.meshUnderPointer.id;
+					var pieceID = meshID.replace('piece','');
+					pieceRightClicked(pieceID);
+				},
+			)
+		);
+	}
+	
 	// Allow Pieces to cast shadows onto board
 	shadowGenerator = new BABYLON.ShadowGenerator(1024, light1);
 	
+	//add pieces to shadowmap
 	for (x in pieces){
 		pieces[x].receiveShadows = true;
 		shadowGenerator.getShadowMap().renderList.push(pieces[x]);	
 	}
 
 	board.receiveShadows = true;
+}
+
+function pieceRightClicked(pieceID){
+	highlightLayer.addMesh(pieces[pieceID], BABYLON.Color3.Green());
 }
