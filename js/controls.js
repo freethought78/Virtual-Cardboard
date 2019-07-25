@@ -16,12 +16,12 @@ function defineControls(){
 		function(){
 			// if the chat is not focused, allow these keys to move the camera
 			if(chatFocused == false){	
-				//Spacebar
-				if (keys[32] == true){
+				//Q key goes up
+				if (keys[81] == true){
 					camera.position.y += 0.02*engine.getDeltaTime();
 				}
-				//Left Control
-				if (keys[17] == true){
+				//E key goes down
+				if (keys[69] == true){
 					camera.position.y -= 0.02*engine.getDeltaTime();
 				}
 			}
