@@ -33,6 +33,7 @@ function createScene(){
 	floorcolor.alpha = 0;
 	floor.material = floorcolor;
 	
+	/*
 	//Add Skybox
 	var skyMaterial = new BABYLON.SkyMaterial("skyMaterial", scene);
 	skyMaterial.backFaceCulling = false;
@@ -43,8 +44,9 @@ function createScene(){
 	
 	var skybox = BABYLON.Mesh.CreateBox("skyBox", 1000.0, scene);
 	skybox.material = skyMaterial;
+	*/
 	
-	// Add glow layer to scene
+	// Add highlight layer to scene
 	highlightLayer = new BABYLON.HighlightLayer("hl1", scene);
 	
 	//Create components of checkers scene from external file js/checkers.js
