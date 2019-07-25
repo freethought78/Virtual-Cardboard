@@ -43,7 +43,7 @@ function createGUI(){
 	advancedTexture.addControl(chatrect);   
 	advancedTexture.addControl(chatinput); 
 	
-	fullscreenButton = BABYLON.GUI.Button.CreateSimpleButton("but1", "Fullscreen");
+	fullscreenButton = BABYLON.GUI.Button.CreateSimpleButton("fullscreenButton", "Fullscreen");
 	fullscreenButton.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
 	fullscreenButton.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
 	fullscreenButton.width = "75px";
@@ -55,7 +55,19 @@ function createGUI(){
 	fullscreenButton.onPointerUpObservable.add(function() {
 		engine.switchFullscreen();
 	});
-	advancedTexture.addControl(fullscreenButton);    
+	advancedTexture.addControl(fullscreenButton);
+	
+	selectButton = BABYLON.GUI.Button.CreateSimpleButton("selectButton", "Select");
+	selectButton.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+	selectButton.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+	selectButton.width = "75px";
+	selectButton.height = "20px";
+	selectButton.top = "10%";
+	selectButton.color = "white";
+	selectButton.fontSize = 12;
+	selectButton.cornerRadius = 5;
+	selectButton.background = "darkblue";
+	advancedTexture.addControl(selectButton);
 	
 	serverIDrect = BABYLON.GUI.Button.CreateSimpleButton("serverIDbutton", "Server ID:\n"+serverID);
 	serverIDrect.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
